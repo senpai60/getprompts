@@ -1,5 +1,6 @@
+// This file should contain ONLY the text extraction logic.
 const Tesseract = require("tesseract.js");
-const Jimp = require("jimp"); // Make sure this line is here
+const Jimp = require("jimp");
 
 /**
  * Extracts text from an image URL by first cropping to the prompt area.
@@ -12,13 +13,16 @@ const extractText = async (imageUrl) => {
   }
 
   try {
-    // This line was failing because 'Jimp' was not a valid object.
     const image = await Jimp.read(imageUrl);
 
-    const cropHeight = image.bitmap.height * 0.20;
+    // Crop to the bottom 25% of the image, which is a safer bet for prompts
+    const cropHeight = image.bitmap.height * 0.25;
     const cropY = image.bitmap.height - cropHeight;
-
     image.crop(0, cropY, image.bitmap.width, cropHeight);
+
+    // Convert to grayscale and increase contrast for better OCR accuracy
+    image.greyscale();
+    image.contrast(0.2);
 
     const croppedImageBuffer = await image.getBufferAsync(Jimp.MIME_PNG);
 
@@ -30,10 +34,12 @@ const extractText = async (imageUrl) => {
       }
     );
 
-    return text.replace(/\n/g, ' ').trim();
+    // Clean up the text by removing newlines and extra spaces
+    return text.replace(/\s+/g, ' ').trim();
 
   } catch (err) {
-    console.error("Error extracting text:", err.message);
+    console.error("Error during text extraction:", err.message);
+    // It's better to throw the original error to see the full stack trace
     throw err;
   }
 };
