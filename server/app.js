@@ -2,8 +2,11 @@ const express = require("express");
 const { route } = require("./routes");
 const app = express();
 var cors = require("cors");
+const db = require('./utils/db')
 
 var whitelist = ["http://localhost:5173",undefined,null];
+
+db()
 
 var corsOptions = {
   origin: function (origin, callback) {

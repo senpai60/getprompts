@@ -31,16 +31,16 @@ const samplePins = [
 ];
 
 
-const PinterestGrid = ({images}) => {
+const PinterestGrid = ({pins}) => {
   return (
     // The main container with your dark background
     <div className="p-4 min-h-screen bg-zinc-950">
       {/* Responsive Masonry grid container */}
       <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 gap-4">
-        {images.map((image,i) => (
+        {pins.map((pin,i) => (
           <PromptsCard
             key={i}
-            imageUrl={image}
+            imageUrl={pin}
             
           />
         ))}

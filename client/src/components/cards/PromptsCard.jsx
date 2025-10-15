@@ -1,13 +1,13 @@
 // src/components/PinterestCard.jsx
 
-const PromptsCard = ({ imageUrl }) => {
+const PromptsCard = ({ pin }) => {
   return (
     <div className="group relative bg-zinc-900 rounded-lg overflow-hidden break-inside-avoid shadow-md hover:shadow-xl transition-shadow duration-300 mb-4">
       {/* Image and Hover Overlay */}
       <div className="relative">
         <img 
           className="w-full object-cover" 
-          src={imageUrl} 
+          src={pin.imageUrl} 
         />
         
         {/* Hover Overlay */}

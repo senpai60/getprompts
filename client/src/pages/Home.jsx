@@ -6,13 +6,13 @@ import { useEffect } from "react";
 import { useState } from "react";
 
 function Home() {
-  const [images, setImages] = useState([]);
+  const [pins, setPins] = useState([]);
   useEffect(() => {
     const fetchPins = async () => {
       try {
         const response = await api.get("/promptsApi/prompts");
         // Assuming response.data is an array of image URLs or prompt objects
-        setImages(response.data);
+        setPins(response.data);
         console.log(response.data);
         
       } catch (err) {
@@ -37,7 +37,7 @@ function Home() {
         </div>
       </section>
       
-      <PinterestGrid images={images.slice(0,12)} />
+      <PinterestGrid pins={pins} />
     </div>
   );
 }
