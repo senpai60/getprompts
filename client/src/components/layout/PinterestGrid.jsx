@@ -40,7 +40,7 @@ const PinterestGrid = ({pins}) => {
         {pins.map((pin,i) => (
           <PromptsCard
             key={i}
-            imageUrl={pin}
+            pin={pin}
             
           />
         ))}

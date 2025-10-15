@@ -6,22 +6,37 @@ import { useEffect } from "react";
 import { useState } from "react";
 
 function Home() {
+  // State to hold ALL fetched pins from the API
   const [pins, setPins] = useState([]);
+  
+  // State to control how many pins are currently visible
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  // ✅ NEW: State to handle the loading UI
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchPins = async () => {
       try {
+        setLoading(true); // Show loader before fetching
         const response = await api.get("/promptsApi/prompts");
-        // Assuming response.data is an array of image URLs or prompt objects
         setPins(response.data);
         console.log(response.data);
-        
       } catch (err) {
         console.error("Error fetching images:", err);
+      } finally {
+        setLoading(false); // Hide loader after fetch is complete (or fails)
       }
     };
 
-    fetchPins(); // call the function
+    fetchPins();
   }, []);
+
+  // Function to show the next 12 pins
+  const handleLoadMore = () => {
+    setVisibleCount(24); // Set the visible count to the max limit
+  };
+
   return (
     <div className="w-full min-h-screen">
       <section className="hero w-full h-screen relative">
@@ -37,7 +52,23 @@ function Home() {
         </div>
       </section>
       
-      <PinterestGrid pins={pins} />
+      {/* ✅ NEW: Conditional rendering for the grid and loader */}
+      {loading ? (
+        <div className="text-center my-10">Loading Pins...</div>
+      ) : (
+        <>
+          <PinterestGrid pins={pins.slice(0, visibleCount)} />
+
+          {/* This section will only appear if there are more pins to show */}
+          {visibleCount < 24 && pins.length > 12 && (
+            <div className="w-full flex justify-center my-8">
+              <PrimaryButton onClick={handleLoadMore}>
+                Load Next 12
+              </PrimaryButton>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
