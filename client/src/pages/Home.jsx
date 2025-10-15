@@ -6,35 +6,41 @@ import { useEffect } from "react";
 import { useState } from "react";
 
 function Home() {
-  // State to hold ALL fetched pins from the API
   const [pins, setPins] = useState([]);
-  
-  // State to control how many pins are currently visible
   const [visibleCount, setVisibleCount] = useState(12);
-
-  // ✅ NEW: State to handle the loading UI
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPins = async () => {
       try {
-        setLoading(true); // Show loader before fetching
+        setLoading(true);
         const response = await api.get("/promptsApi/prompts");
-        setPins(response.data);
-        console.log(response.data);
+
+        // ✅ FIX: Ensure you are accessing the array from the response.
+        // The property might be 'data', 'prompts', or something else.
+        // Use console.log(response.data) to check the actual structure.
+        const pinsArray =
+          response.data.prompts || response.data.data || response.data;
+
+        // ✅ FIX: Add a check to ensure the data is an array before setting state.
+        if (Array.isArray(pinsArray)) {
+          setPins(pinsArray);
+        } else {
+          console.error("Fetched data is not an array:", pinsArray);
+          setPins([]); // Set to empty array to prevent crashes
+        }
       } catch (err) {
         console.error("Error fetching images:", err);
       } finally {
-        setLoading(false); // Hide loader after fetch is complete (or fails)
+        setLoading(false);
       }
     };
 
     fetchPins();
   }, []);
 
-  // Function to show the next 12 pins
   const handleLoadMore = () => {
-    setVisibleCount(24); // Set the visible count to the max limit
+    setVisibleCount((prevCount) => prevCount + 12); // Use functional update for safety
   };
 
   return (
@@ -51,20 +57,16 @@ function Home() {
           <PrimaryButton>Try Now!</PrimaryButton>
         </div>
       </section>
-      
-      {/* ✅ NEW: Conditional rendering for the grid and loader */}
+
       {loading ? (
         <div className="text-center my-10">Loading Pins...</div>
       ) : (
         <>
           <PinterestGrid pins={pins.slice(0, visibleCount)} />
 
-          {/* This section will only appear if there are more pins to show */}
-          {visibleCount < 24 && pins.length > 12 && (
-            <div className="w-full flex justify-center my-8">
-              <PrimaryButton onClick={handleLoadMore}>
-                Load Next 12
-              </PrimaryButton>
+          {visibleCount < pins.length && (
+            <div className="w-full flex justify-center pb-4">
+              <PrimaryButton onClick={handleLoadMore}>Load More</PrimaryButton>
             </div>
           )}
         </>

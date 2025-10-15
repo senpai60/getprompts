@@ -4,16 +4,17 @@ const pins = require("../data/pins.json");
 const extractText = require("../utils/extractText");
 const Prompt = require("../models/Prompt");
 
-router.get("/", async(req, res) => {
+router.get("/", async (req, res) => {
   try {
-     const prompts = await Prompt.find({})
+    const prompts = await Prompt.find({});
     // console.log(pinUrls[0]);
     res.status(200).json(prompts);
   } catch (err) {}
 });
-router.get("/test", async (req, res) => {
+router.get("/:pinId", async (req, res) => {
   try {
-    const prompt = await Prompt.findById("68eee60413a1042a87abac53");
+    const {pinId} = req.params;
+    const prompt = await Prompt.findById(pinId);
 
     if (!prompt) {
       return res.status(404).json({ error: "Prompt not found" });
